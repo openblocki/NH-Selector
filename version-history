@@ -1,3 +1,4 @@
 Pride Versioning:_
 release - v0.1.0a
-fix - v.0.1.1a -> Update Workflow to Release on Commit
+fix - v0.1.1a -> Update Workflow to Release on Commit
+fix - v0.1.2a -> Forgot to set the right Python Version in Workflow
