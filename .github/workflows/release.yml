@@ -1,15 +1,17 @@
-name: Build and Release
+name: Build and Release NHSelector
 
 on:
   push:
-    tags:
-      - 'v*' # Triggers on any tag push starting with v
+    branches:
+      - master
 
 jobs:
   build:
+    # Only runs if the commit message starts with 'v'
+    if: startsWith(github.event.head_commit.message, 'v')
     runs-on: windows-latest
     permissions:
-      contents: write # Required to create the release and upload assets
+      contents: write
 
     steps:
       - name: Checkout Code
@@ -18,22 +20,22 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.13'
+          python-version: '3.10'
 
       - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip
           pip install pyinstaller
-          # If you have other requirements, uncomment the line below:
-          # pip install -r requirements.txt
+          if (Test-Path requirements.txt) { pip install -r requirements.txt }
 
       - name: Build with PyInstaller
-        run: |
-          pyinstaller -F --noconsole NHSelector.py 
+        run: pyinstaller -F --noconsole NHSelector.py
 
-      - name: Create Release and Upload Asset
+      - name: Create Release and Upload EXE
         uses: softprops/action-gh-release@v2
         with:
-          files: dist/App # PyInstaller puts the output in the dist/ folder
+          tag_name: ${{ github.event.head_commit.message }}
+          name: Release ${{ github.event.head_commit.message }}
+          files: dist/NHSelector.exe
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
